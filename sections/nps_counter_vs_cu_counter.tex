@@ -50,6 +50,8 @@ The tests benchmarked the total time spent waiting for the count call, summarize
 \begin{figure}[ht!]\label{figure:cuht-capacity}
 \begin{center}
 \begin{tikzpicture}
+
+  \node at(5.5,5)(title){CUDA hashtable memory-efficiency tradeoff};
  
 \begin{axis} [
   ymajorgrids = true,
@@ -101,6 +103,8 @@ The tests benchmarked the total time spent waiting for the count call, summarize
 \begin{figure}[ht!]\label{figure:nps-vs-cu}
 \begin{center}
 \begin{tikzpicture}
+
+  \node at(5.5,5)(title){npstructures counter versus CUDA counter};
  
 \begin{axis} [
   ymajorgrids = true,
@@ -133,6 +137,6 @@ The tests benchmarked the total time spent waiting for the count call, summarize
 \end{axis}
  
 \end{tikzpicture}
-\caption{CUDA counter uses a capacity factor of 2.0.}
+\caption{CUDA counter uses a capacity factor of 2.0. The chunk size used to read the 20 million reads was 10 million bytes.}
 \end{center}
 \end{figure}
