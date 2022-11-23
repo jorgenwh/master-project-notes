@@ -1,0 +1,124 @@
+\section{Fast poisson logpmf}
+\subsection{The implementations}
+The poisson logpmf is something aaaa
+
+We have four different implementations performing (poisson logpmf?) ... :
+
+
+\definecolor{keywordclr}{rgb}{0,0,1}
+\definecolor{stringclr}{rgb}{0.75,0.15,0.15}
+\definecolor{commentclr}{rgb}{0.5,0.5,0.5}
+
+\lstset{frame=tb,
+  language=Python,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=left,
+  numberstyle=\smaller\color{commentclr},
+  keywordstyle=\color{keywordclr},
+  commentstyle=\color{commentclr},
+  stringstyle=\color{stringclr},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=4
+}
+
+The first implementation we consider is the implementation provided by the SciPy \cite{SciPy}.
+This implementation runs on the CPU.
+\begin{lstlisting}
+from scipy.stats import poisson
+
+def poisson_logpmf(k, r):
+    return poisson.logpmf(k, r)
+\end{lstlisting}
+
+The second implementation is an implementation created by I\&K using NumPy \cite{NumPy} and SciPy.
+This implementation also runs on the CPU, but is nearly twice as fast as the one provided by the SciPy library when the k and r matrices have 40 million elements each.
+\begin{lstlisting}
+import numpy as np
+import scipy
+
+def poisson_logpmf(k, r):
+    return k * np.log(r) - r - scipy.special.gammaln(k+1)
+\end{lstlisting}
+
+The third implementation piggybacks off of the previous NumPy implementation, but is ported to CuPy \cite{CuPy}.
+This implementation achieves large speed increases over the NumPy equivalent for large matrices.
+\begin{lstlisting}
+import cupy as cp 
+
+def poisson_logpmf(k, r):
+    return k * cp.log(r) - r - cupyx.scipy.special.gammaln(k+1)
+\end{lstlisting}
+
+\lstset{frame=tb,
+  language=C++,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=left,
+  numberstyle=\smaller\color{commentclr},
+  keywordstyle=\color{keywordclr},
+  commentstyle=\color{commentclr},
+  stringstyle=\color{stringclr},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=4
+}
+
+The CUDA implementation (just the kernel).
+\begin{lstlisting}
+__global__ void poisson_logpmf_kernel(const int *k, const float *r, float *out)
+{
+  thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
+  out[i] = k[i] * logf(r[i]) - r[i] - lgammaf(k[i]+1);
+}
+\end{lstlisting}
+
+\pgfplotsset{
+  compat=newest,
+  xlabel near ticks,
+  ylabel near ticks
+}
+
+\begin{figure}[ht!]\label{figure:poisson_logpmf_performance}
+\begin{center}
+  \begin{tikzpicture}[font=\small]
+
+  \node at(5.5,5)(title){Eeeeee};
+ 
+\begin{axis} [
+  ylabel={runtime (seconds)},
+  xlabel={implementation},
+  ybar,
+  bar width=20pt,
+  ymin=0,
+  xtick=data,
+  axis x line=bottom,
+  axis y line=left,
+  enlarge x limits=0.2,
+  symbolic x coords={scipy, numpy, cupy, cuda},
+  xticklabel style={anchor=base, yshift=-\baselineskip},
+  /pgf/number format/.cd,fixed,precision=3,
+  nodes near coords={\pgfmathprintnumber{\pgfplotspointmeta} s},
+]
+
+\addplot[fill=blue] coordinates {
+    (scipy, 0.2843504619598389)
+    (numpy, 0.15413585186004639)
+    (cupy, 0.037178173065185546)
+    (cuda, 0.012188527584075928)
+};
+
+\end{axis}
+ 
+\end{tikzpicture}
+\caption{Runtime in seconds averaged over 100 function calls where len(k) = len(r) = 40,000,000}
+\end{center}
+\end{figure}
+
