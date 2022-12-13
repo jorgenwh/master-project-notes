@@ -130,6 +130,7 @@ We omit the variation where both the inputs are located on the host and the outp
   xticklabel style={anchor=base, yshift=-\baselineskip},
   /pgf/number format/.cd,fixed,precision=3,
   nodes near coords={\small\pgfmathprintnumber{\pgfplotspointmeta}},
+  legend style={anchor=west},
 ]
 
 \addplot[fill=blue] coordinates {
@@ -182,6 +183,7 @@ We omit the variation where both the inputs are located on the host and the outp
   /pgf/number format/.cd,fixed,precision=3,
   nodes near coords={\small\pgfmathprintnumber{\pgfplotspointmeta}},
   every y tick scale label/.style={at={(yticklabel cs:1.1)},anchor=north},
+  legend style={anchor=west},
 ]
 
 \addplot[fill=blue] coordinates {
@@ -201,5 +203,128 @@ We omit the variation where both the inputs are located on the host and the outp
  
 \end{tikzpicture}
 \caption{Runtime in seconds averaged over 100 function calls where len(k) = len(r) = 40,000,000}
+%\end{center}
+\end{figure}
+
+\begin{figure}[ht!]\label{figure:experimental_poisson_logpmf_performance}
+\hspace*{3cm}
+%\begin{center}
+  \begin{tikzpicture}[font=\small]
+
+    \pgfplotsset{
+      compat=newest,
+      xlabel near ticks,
+      ylabel near ticks
+    }
+
+    \pgfplotsset{compat=1.11,
+        /pgfplots/ybar legend/.style={
+        /pgfplots/legend image code/.code={%
+           \draw[##1,/tikz/.cd,yshift=-0.25em]
+            (0cm,0cm) rectangle (3pt,0.8em);},
+       },
+    }
+
+    \node at(5.5,6.5)(title){poisson logpmf - NumPy vs. CUDA};
+ 
+\begin{axis} [
+  ylabel={runtime (milliseconds)},
+  xlabel={n\_counts (thousands)},
+  ybar,
+  bar width=20pt,
+  ymin=0,
+  xtick=data,
+  axis x line=bottom,
+  axis y line=left,
+  enlarge x limits=0.3,
+  symbolic x coords={10, 25, 50, 100},
+  xticklabel style={anchor=base, yshift=-\baselineskip},
+  /pgf/number format/.cd,fixed,precision=3,
+  nodes near coords={\small\pgfmathprintnumber{\pgfplotspointmeta}},
+  every y tick scale label/.style={at={(yticklabel cs:1.1)},anchor=north},
+  legend style={anchor=west},
+]
+
+\addplot[fill=blue] coordinates {
+    (25, 5.82169)
+    (50, 11.77253)
+    (100, 22.75124)
+};
+
+\addplot[fill=red] coordinates {
+    (25, 0.11837)
+    (50, 0.14367)
+    (100, 0.24571)
+};
+
+\legend{CuPy, CUDA}
+\end{axis}
+ 
+\end{tikzpicture}
+\caption{Runtime in seconds averaged over 1000 function calls with n\_counts=50,000}
+%\end{center}
+\end{figure}
+
+\subsubsection{Hey}
+
+\begin{compactitem}
+  \item
+    49.2x speedup
+
+  \item
+    81.9x speedup
+
+  \item
+    92.6x speedup
+\end{compactitem}
+
+\begin{figure}[ht!]\label{figure:experimental_poisson_logpmf_performance_speedups}
+\hspace*{3cm}
+%\begin{center}
+  \begin{tikzpicture}[font=\small]
+
+    \pgfplotsset{
+      compat=newest,
+      xlabel near ticks,
+      ylabel near ticks
+    }
+
+    \pgfplotsset{compat=1.11,
+        /pgfplots/ybar legend/.style={
+        /pgfplots/legend image code/.code={%
+           \draw[##1,/tikz/.cd,yshift=-0.25em]
+            (0cm,0cm) rectangle (3pt,0.8em);},
+       },
+    }
+
+    \node at(5.5,6.5)(title){Speedup multiplier};
+ 
+\begin{axis} [
+  ylabel={X speedup},
+  xlabel={n\_count (thousands)},
+  ybar,
+  bar width=20pt,
+  ymin=0,
+  xtick=data,
+  axis x line=bottom,
+  axis y line=left,
+  enlarge x limits=0.2,
+  symbolic x coords={25, 50, 100},
+  xticklabel style={anchor=base, yshift=-\baselineskip},
+  /pgf/number format/.cd,fixed,precision=3,
+  nodes near coords={\small\pgfmathprintnumber{\pgfplotspointmeta}X},
+  legend style={anchor=west},
+]
+
+\addplot[fill=blue] coordinates {
+    (25, 49.2)
+    (50, 81.9)
+    (100, 92.6)
+};
+
+\end{axis}
+ 
+\end{tikzpicture}
+\caption{Eeee}
 %\end{center}
 \end{figure}
